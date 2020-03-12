@@ -43,3 +43,66 @@ modified_AgeCat <- factor(managers$AgeCat, ordered = TRUE, levels = c("Young", "
 managers$AgeCat <- modified_AgeCat
 
 str(managers)
+
+managers$summary_col <- managers$Q1 + managers$Q2 + managers$Q3 +  managers$Q4 +  managers$Q5
+
+managers
+
+new_data <- subset(managers, Age >= 35 | Age < 24, select=c(Q1, Q2, Q3, Q4, Q5))
+str(new_data)
+new_data
+
+mean_value <- rowMeans(managers[5:9])
+managers <- data.frame(managers, mean_value)
+managers
+
+#add column names to new columns
+names(managers) [11] <- "Answer total"
+names(managers) [12] <- "Mean value"
+
+managers
+
+str(managers)
+
+#change the date structure from factor
+#we cant convert a factor to date
+#without converting to character vector first
+
+date_field <- as.character(managers$Date)
+date_field
+str(date_field)
+
+new_date <- as.Date(date_field, "%Y-%d-%m")
+new_date
+str(new_date)
+str(managers)
+managers$Date <- new_date
+str(managers)
+
+#dealing with missing data
+
+new_data <- na.omit(managers)
+new_data
+
+complete_data <- complete.cases(managers)
+complete_data
+sum(complete_data)
+
+#list rows that do not have missing values
+#note that the ',' means all columns 
+complete_data <- managers[!complete.cases(managers),]
+complete_data
+
+#find the sum if all missing values in the age category
+sum(is.na(managers$Age))
+
+sum(!is.na(managers$Age))
+
+install.packages("mice")
+library(mice)
+
+md.pattern(managers)
+
+install.packages("VIM")
+library(VIM)
+missing_values <- aggr(managers, prop = FALSE, numbers = TRUE)
